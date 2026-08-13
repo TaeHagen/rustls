@@ -2,6 +2,7 @@ use alloc::borrow::ToOwned;
 use alloc::boxed::Box;
 use alloc::vec;
 use alloc::vec::Vec;
+// use log::info;
 use core::ops::Deref;
 
 use pki_types::ServerName;
@@ -598,6 +599,7 @@ fn prepare_preshared_keys<'a>(
                 let binder = vec![0; key.hash_alg.output_len()];
                 (ident, binder)
             })));
+            // info!("Offering preshared keys {:?}", exts.preshared_key_offer);
 
             Some(tls13::Preshared::External {
                 keys,

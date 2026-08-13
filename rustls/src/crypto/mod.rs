@@ -7,6 +7,7 @@ use zeroize::{Zeroize, Zeroizing};
 
 #[cfg(all(doc, feature = "tls12"))]
 use crate::Tls12CipherSuite;
+use crate::crypto::ring::hash::SHA256;
 use crate::msgs::ffdhe_groups::FfdheGroup;
 use crate::sign::SigningKey;
 use crate::sync::Arc;
@@ -683,7 +684,6 @@ impl PresharedKey {
     pub fn external(
         identity: &[u8],
         secret: &[u8],
-        hash_alg: &'static dyn hash::Hash,
     ) -> Option<Self> {
         // `identity` is `opaque<1..2^16-1>`.
         if identity.is_empty()
@@ -696,7 +696,7 @@ impl PresharedKey {
         Some(Self {
             identity: Zeroizing::new(identity.to_vec().into_boxed_slice()),
             secret: Zeroizing::new(secret.to_vec().into_boxed_slice()),
-            hash_alg,
+            hash_alg: &SHA256,
         })
     }
 }

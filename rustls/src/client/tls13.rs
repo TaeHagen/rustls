@@ -2,6 +2,7 @@ use alloc::boxed::Box;
 use alloc::vec;
 use alloc::vec::Vec;
 
+// use log::info;
 use pki_types::ServerName;
 use subtle::ConstantTimeEq;
 
@@ -383,7 +384,7 @@ pub(super) fn fill_in_psk_binder(
 
                 let ks = KeyScheduleEarly::new(suite, &key.secret);
                 real_binders
-                    .push(ks.resumption_psk_binder_key_and_sign_verify_data(&handshake_hash));
+                    .push(ks.external_psk_binder_key_and_sign_verify_data(&handshake_hash));
 
                 if suite_and_schedule.is_none() {
                     suite_and_schedule = Some((suite, ks));

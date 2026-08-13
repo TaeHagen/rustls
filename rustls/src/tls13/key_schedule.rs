@@ -16,6 +16,7 @@ use crate::{ConnectionTrafficSecrets, KeyLog, Tls13CipherSuite, quic};
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SecretKind {
     ResumptionPskBinderKey,
+    ExternalPskBinderKey,
     ClientEarlyTrafficSecret,
     ClientHandshakeTrafficSecret,
     ServerHandshakeTrafficSecret,
@@ -33,6 +34,7 @@ impl SecretKind {
         use self::SecretKind::*;
         match self {
             ResumptionPskBinderKey => b"res binder",
+            ExternalPskBinderKey => b"ext binder",
             ClientEarlyTrafficSecret => b"c e traffic",
             ClientHandshakeTrafficSecret => b"c hs traffic",
             ServerHandshakeTrafficSecret => b"s hs traffic",
@@ -144,6 +146,17 @@ impl KeyScheduleEarly {
             .derive_for_empty_hash(SecretKind::ResumptionPskBinderKey);
         self.ks
             .sign_verify_data(&resumption_psk_binder_key, hs_hash)
+    }
+
+    pub(crate) fn external_psk_binder_key_and_sign_verify_data(
+        &self,
+        hs_hash: &hash::Output,
+    ) -> hmac::Tag {
+        let external_psk_binder_key = self
+            .ks
+            .derive_for_empty_hash(SecretKind::ExternalPskBinderKey);
+        self.ks
+            .sign_verify_data(&external_psk_binder_key, hs_hash)
     }
 }
 

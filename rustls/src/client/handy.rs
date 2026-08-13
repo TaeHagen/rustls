@@ -196,6 +196,7 @@ pub use cache::ClientSessionMemoryCache;
 
 #[cfg(any(feature = "std", feature = "hashbrown"))]
 mod preshared_keys {
+    // use log::{debug, info};
     use pki_types::ServerName;
 
     use crate::client::PresharedKeyStore;
@@ -214,15 +215,15 @@ mod preshared_keys {
         ///
         /// Replaces any existing keys for that server name.
         pub fn update(&mut self, server_name: ServerName<'static>, keys: Arc<[PresharedKey]>) {
-            self.keys
-                .entry(server_name)
-                .and_modify(|value| *value = keys);
+            self.keys.insert(server_name, keys);
         }
     }
 
     impl PresharedKeyStore for PresharedKeySet {
         fn keys(&self, server_name: &ServerName<'_>) -> Option<Arc<[PresharedKey]>> {
-            self.keys.get(server_name).cloned()
+            let resp = self.keys.get(server_name).cloned();
+            // info!("Server name {server_name:?} {}", resp.is_some());
+            resp
         }
     }
 }
